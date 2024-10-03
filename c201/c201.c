@@ -97,6 +97,7 @@ void List_InsertFirst( List *list, int data ) {
 	ListElementPtr newElemPtr = (ListElementPtr) malloc(sizeof(struct ListElement));
 	if (newElemPtr == NULL) {
 		List_Error();
+		return;
 	}
 	newElemPtr->data = data;
 	newElemPtr->nextElement = list->firstElement;
@@ -141,19 +142,21 @@ void List_GetFirst( List *list, int *dataPtr ) {
  * @param list Ukazatel na inicializovanou strukturu jednosměrně vázaného seznamu
  */
 void List_DeleteFirst( List *list ) {
-	ListElementPtr tmp_ptr;
 	if (list->firstElement != NULL) {
-		tmp_ptr = list->firstElement;
+		ListElementPtr tmp_ptr = list->firstElement;
+
 		if (list->activeElement == list->firstElement) {
 			list->activeElement = NULL;
 		}
-		if (list->firstElement->nextElement != NULL) {
-			list->firstElement = list->firstElement->nextElement; // "The king is dead, long live the king."
-		}
+
+		list->firstElement = tmp_ptr->nextElement; // "The king is dead, long live the king."
+
 		free(tmp_ptr);
+
 		list->currentLength--;
+
 	} // continue if the list contains at least the first node
-	// solved = false; /* V případě řešení, smažte tento řádek! */
+	//solved = false; /* V případě řešení, smažte tento řádek! */
 }
 
 /**
@@ -190,6 +193,7 @@ void List_InsertAfter( List *list, int data ) {
 		ListElementPtr newElemPtr = (ListElementPtr) malloc (sizeof(struct ListElement));
 		if (newElemPtr == NULL) {
 			List_Error();
+			return;
 		}
 		newElemPtr->data = data;
 		newElemPtr->nextElement = list->activeElement->nextElement;
