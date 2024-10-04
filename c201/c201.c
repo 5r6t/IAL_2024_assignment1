@@ -67,7 +67,6 @@ void List_Init( List *list ) {
 	list->firstElement = NULL;
 	list->activeElement = NULL;
 	list->currentLength = 0;
-	// solved = false; /* V případě řešení, smažte tento řádek! */
 }
 
 /**
@@ -82,7 +81,6 @@ void List_Dispose( List *list ) {
 		List_DeleteFirst(list);
 	} //delete and free all nodes
 	List_Init (list);
-	solved = false; /* V případě řešení, smažte tento řádek! */
 }
 
 /**
@@ -104,7 +102,6 @@ void List_InsertFirst( List *list, int data ) {
 	list->firstElement = newElemPtr;
 
 	list->currentLength++; // update length of the list
-	// solved = false; /* V případě řešení, smažte tento řádek! */
 }
 
 /**
@@ -115,7 +112,6 @@ void List_InsertFirst( List *list, int data ) {
  */
 void List_First( List *list ) {
 	list->activeElement = list->firstElement;
-	// solved = false; /* V případě řešení, smažte tento řádek! */
 }
 
 /**
@@ -131,7 +127,6 @@ void List_GetFirst( List *list, int *dataPtr ) {
 		return;
 	}
 	*dataPtr = list->firstElement->data;
-	// solved = false; /* V případě řešení, smažte tento řádek! */
 }
 
 /**
@@ -152,7 +147,6 @@ void List_DeleteFirst( List *list ) {
 		list->firstElement = tmp_ptr->nextElement; // "The king is dead, long live the king."
 
 		free(tmp_ptr);
-
 		list->currentLength--;
 
 	} // continue if the list contains at least the first node
@@ -176,7 +170,6 @@ void List_DeleteAfter( List *list ) {
 			list->currentLength--;
 		} // if there is a node behind the active one
 	} // if list is active
-	// solved = false; /* V případě řešení, smažte tento řádek! */
 }
 
 /**
@@ -198,8 +191,7 @@ void List_InsertAfter( List *list, int data ) {
 		newElemPtr->data = data;
 		newElemPtr->nextElement = list->activeElement->nextElement;
 		list->activeElement->nextElement = newElemPtr;
-	} // if the list is active, else nothing
-	// solved = false; /* V případě řešení, smažte tento řádek! */
+	} // active list
 }
 
 /**
@@ -214,7 +206,6 @@ void List_GetValue( List *list, int *dataPtr ) {
 		*dataPtr = list->activeElement->data;
 	}
 	else List_Error();
-	// solved = false; /* V případě řešení, smažte tento řádek! */
 }
 
 /**
@@ -228,7 +219,6 @@ void List_SetValue( List *list, int data ) {
 	if (list->activeElement != NULL) {
 		list->activeElement->data = data;	
 	}
-	// solved = false; /* V případě řešení, smažte tento řádek! */
 }
 
 /**
@@ -242,7 +232,6 @@ void List_Next( List *list ) {
 	if (list->activeElement != NULL) { //if list not active, ignore
 		list->activeElement = list->activeElement->nextElement; // set next element as active
 	}
-	// solved = false; /* V případě řešení, smažte tento řádek! */
 }
 
 /**
@@ -252,8 +241,6 @@ void List_Next( List *list ) {
  * @param list Ukazatel na inicializovanou strukturu jednosměrně vázaného seznamu
  */
 int List_IsActive( List *list ) {
-	// solved = false; /* V případě řešení, smažte tento řádek! */
-	//return 0;
 	return list->activeElement != NULL;
 }
 
