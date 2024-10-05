@@ -160,19 +160,19 @@ TEST(test_is_active, "Aktivita seznamu")
 	List_InsertFirst(test_list, 2);
 	List_InsertFirst(test_list, 1);
 	test_print_list(test_list);
-	printf("Is 1st list element active? %s\n", List_IsActive(test_list) ? "Yes" : "No");
+	printf("Is list element active? %s\n", List_IsActive(test_list) ? "Yes" : "No");
 
 	List_First(test_list);
-	printf("Is 1st list element active (after List_First func)? %s\n", List_IsActive(test_list) ? "Yes" : "No");
+	printf("Is list element active? %s\n", List_IsActive(test_list) ? "Yes" : "No");
 
 	List_Next(test_list);
-	printf("(Next func) Is 2nd list element active? %s\n", List_IsActive(test_list) ? "Yes" : "No");
+	printf("Is list element active? %s\n", List_IsActive(test_list) ? "Yes" : "No");
 
 	List_Next(test_list);
-	printf("(Next func) Is 3rd list element active? %s\n", List_IsActive(test_list) ? "Yes" : "No");
+	printf("Is list element active? %s\n", List_IsActive(test_list) ? "Yes" : "No");
 
 	List_Next(test_list);
-	printf("(Next func) Is 4th (doesnt exist) list element active? %s\n", List_IsActive(test_list) ? "Yes" : "No");
+	printf("Is list element active? %s\n", List_IsActive(test_list) ? "Yes" : "No");
 ENDTEST
 
 TEST(test_insert_after_last, "Vložení několika prvků na poslední místo")
