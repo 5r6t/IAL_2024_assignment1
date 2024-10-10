@@ -27,42 +27,15 @@ bool solved;
  * @param packetLists Ukazatel na inicializovanou strukturu dvousměrně vázaného seznamu
  * @param packet Ukazatel na strukturu přijatého paketu
  */
+
+// Our own supporting functions are allowed !!! 
 void receive_packet( DLList *packetLists, PacketPtr packet ) {
-	// find apropriate queue
-	QosPacketListPtr targetQueue = NULL;
-	DLL_First(packetLists); // set first el as active
-	while (DLL_IsActive(packetLists)) { // move through the whole list
-		QosPacketListPtr cur_queue;
-		DLL_GetValue(packetLists, (long *)&cur_queue);
-		if (cur_queue->priority == packet->priority) {
-			targetQueue = cur_queue;
-			break;
-		}
-		DLL_Next(packetLists);
-	}
-	// if said queue does not exist -> create
-	if (targetQueue == NULL) {
-		targetQueue = (QosPacketListPtr) malloc (sizeof(QosPacketList));
-		targetQueue->priority = packet->priority;
-		targetQueue->list = (DLList *) malloc (sizeof(DLList));
-		DLL_Init(targetQueue->list);
-		DLL_InsertLast(packetLists, (long)targetQueue);
-	}
-	
-	DLL_InsertLast(targetQueue->list, (long)packet);
-	// overflow
-	if (targetQueue->list->currentLength > MAX_PACKET_COUNT){
-		DLL_First(targetQueue->list);
-		int index = 1;
-		while (DLL_IsActive(targetQueue->list)) {
-			if (index % 2 == 0) {
-				DLL_DeleteAfter(targetQueue->list);
-			}
-			DLL_Next(targetQueue->list);
-			index++;
-		}
+	if (packetLists->firstElement == NULL) {
+		;
 	}
 }
+
+
 
 /**
  * Tato metoda simuluje výběr síťových paketů k odeslání. Výběr respektuje
@@ -80,21 +53,5 @@ void receive_packet( DLList *packetLists, PacketPtr packet ) {
  * @param maxPacketCount Maximální počet paketů k odeslání
  */
 void send_packets( DLList *packetLists, DLList *outputPacketList, int maxPacketCount ) {
-	int sent_ps = 0;
-	DLL_First(packetLists);
-	while (DLL_IsActive(packetLists) && sent_ps < maxPacketCount)
-	{
-		QosPacketListPtr curr_queue;
-		DLL_GetValue(packetLists, (long *)&curr_queue);
-
-		if (curr_queue->list->currentLength > 0) {
-			PacketPtr pack_to_send;
-			DLL_GetFirst(curr_queue->list, (long *)&pack_to_send);
-			DLL_InsertLast(outputPacketList, (long)pack_to_send);
-			sent_ps++;
-			DLL_DeleteFirst(curr_queue->list);
-			if (curr_queue->list->currentLength == 0) {};
-		}
-		DLL_Next(packetLists);
-	}
+	solved = false; /* V případě řešení, smažte tento řádek! */
 }
