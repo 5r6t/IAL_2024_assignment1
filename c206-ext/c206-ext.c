@@ -27,14 +27,50 @@ bool solved;
  * @param packetLists Ukazatel na inicializovanou strukturu dvousměrně vázaného seznamu
  * @param packet Ukazatel na strukturu přijatého paketu
  */
-
-// Our own supporting functions are allowed !!! 
 void receive_packet( DLList *packetLists, PacketPtr packet ) {
-	if (packetLists->firstElement == NULL) {
-		;
-	}
-}
 
+    DLLElementPtr queue_actual = packetLists->firstElement; // first queue
+    bool IsQueue_supplied = false;
+
+    // Attempt to find a queue with the matching priority
+    while (queue_actual != NULL) {
+        QosPacketListPtr qosList = (QosPacketListPtr)queue_actual->data; // Get the QoS list
+        if (qosList->priority == packet->priority) {
+            DLList *qpacket_list = qosList->list;
+            DLL_Init(qpacket_list);
+            
+            DLL_InsertLast(qpacket_list, (long)packet); // Insert the packet pointer into the list
+            IsQueue_supplied = true;
+            break;
+        }
+        queue_actual = queue_actual->nextElement; // Move on to the next queue
+    }
+
+    // If no queue found, create a new one
+    if (!IsQueue_supplied) {
+        QosPacketListPtr queue_new = (QosPacketListPtr)malloc(sizeof(QosPacketList)); // new queue
+        if (queue_new == NULL) {
+            printf("Failed to allocate memory for new queue\n");
+            return;
+        }
+        
+        queue_new->list = (DLList*)malloc(sizeof(DLList));
+        if (queue_new->list == NULL) { // Memory allocation failure
+            free(queue_new);
+            printf("Failed to allocate memory for new queue list\n");
+            return;
+        }
+        
+        DLL_Init(queue_new->list);
+        queue_new->priority = packet->priority; // Set priority from packet
+
+        DLL_InsertLast(packetLists, (long)queue_new); // Insert the new queue list into packetLists
+
+        DLL_InsertLast(queue_new->list, (long)packet); // Insert the packet pointer into the list
+        DLL_First(queue_new->list);
+    }
+
+}
 
 
 /**
@@ -53,5 +89,21 @@ void receive_packet( DLList *packetLists, PacketPtr packet ) {
  * @param maxPacketCount Maximální počet paketů k odeslání
  */
 void send_packets( DLList *packetLists, DLList *outputPacketList, int maxPacketCount ) {
-	solved = false; /* V případě řešení, smažte tento řádek! */
+	int sent_ps = 0;
+	DLL_First(packetLists);
+	while (DLL_IsActive(packetLists) && sent_ps < maxPacketCount)
+	{
+		QosPacketListPtr curr_queue;
+		DLL_GetValue(packetLists, (long *)&curr_queue);
+
+		if (curr_queue->list->currentLength > 0) {
+			PacketPtr pack_to_send;
+			DLL_GetFirst(curr_queue->list, (long *)&pack_to_send);
+			DLL_InsertLast(outputPacketList, (long)pack_to_send);
+			sent_ps++;
+			DLL_DeleteFirst(curr_queue->list);
+			if (curr_queue->list->currentLength == 0) {};
+		}
+		DLL_Next(packetLists);
+	}
 }
