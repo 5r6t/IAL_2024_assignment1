@@ -9,7 +9,7 @@
 bool error_flag;
 bool solved;
 
-/** This function is used to print content of the queue
+/** This function is used to print the content of given queue
  * Is a similar function used in tests? Probably...
  *  * @param list Ukazatel na inicializovanou strukturu dvousměrně vázaného seznamu
  */
@@ -63,7 +63,6 @@ void receive_packet( DLList *packetLists, PacketPtr packet ) {
                 }
                 DLL_Last(qpacket_list);
             }
-            
             // printf("Inserting packet %d with priority %d into existing queue with priority %d\n", packet->id, packet->priority, qos_list->priority); // DEBUG
             DLL_InsertLast(qpacket_list, (long)packet); // Insert the packet pointer into the list
             IsQueue_supplied = true;
@@ -73,8 +72,7 @@ void receive_packet( DLList *packetLists, PacketPtr packet ) {
         queue_ptr = queue_ptr->nextElement; // prio check failed, move to next element(containing queue)
     }
 
-    // If no queue found, create a new one
-    if (!IsQueue_supplied) {
+    if (!IsQueue_supplied) { // If no queue found, create a new one
         QosPacketListPtr queue_new = (QosPacketListPtr)malloc(sizeof(QosPacketList)); // new queue
         if (queue_new == NULL) {
             printf("Failed to allocate memory for new queue\n");
@@ -84,7 +82,7 @@ void receive_packet( DLList *packetLists, PacketPtr packet ) {
         queue_new->list = (DLList*)malloc(sizeof(DLList));
         if (queue_new->list == NULL) { // Memory allocation failure
             free(queue_new);
-            printf("Failed to allocate memory for new queue list\n");
+            fprintf(stderr, "Failed to allocate memory for new queue list\n");
             return;
         }
         DLL_Init(queue_new->list);
@@ -131,15 +129,7 @@ void queue_sorter (DLList *packetLists) {
         }
     }while(swapped);
 }
-/*
-c206-ext.c: In function ‘queue_sorter’:
-c206-ext.c:114:36: warning: unused variable ‘next_queue’ [-Wunused-variable]
-  114 |     QosPacketListPtr actual_queue, next_queue;
-      |                                    ^~~~~~~~~~
-c206-ext.c:114:22: warning: unused variable ‘actual_queue’ [-Wunused-variable]
-  114 |     QosPacketListPtr actual_queue, next_queue;
-      |                      ^~~~~~~~~~~~
-*/
+
 /**
  * Tato metoda simuluje výběr síťových paketů k odeslání. Výběr respektuje
  * relativní priority paketů mezi sebou, kde pakety s nejvyšší prioritou
@@ -172,10 +162,11 @@ void send_packets( DLList *packetLists, DLList *outputPacketList, int maxPacketC
             DLL_First(curr_queue->list); // guess who forgot DeleteFirst can remove activity
             sent_ps++; // increment sent packets count
         }
-
+    /* // commented out because called should be responsible for that
         if (curr_queue->list->currentLength == 0) {
             DLL_Dispose(curr_queue->list); // remove empty list
         }
+    */
         DLL_Next(packetLists); // move to the next queue if there's still an active element
     }
 }
