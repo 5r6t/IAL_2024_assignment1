@@ -1,4 +1,4 @@
 # ial2024_du1
-Passes tests
+7.7/10
 
 20th of October
